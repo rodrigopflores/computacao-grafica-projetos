@@ -16,8 +16,7 @@ int main()
 {
 	Renderer renderer(WIDTH, HEIGHT);
 	renderer.setBgColor(glm::vec3(0.8f, 0.8f, 0.8f));
-	GLFWwindow* window = renderer.getWindow();
-	glfwSetKeyCallback(window, key_callback);
+	renderer.setKeyCallback(key_callback);
 
 	ShaderProgram program("resources/shaders/vs.glsl", "resources/shaders/fs.glsl");
 	Texture texture("../3D_Models/Suzanne/Suzanne.png");
@@ -28,9 +27,7 @@ int main()
 	glm::mat4 projection = glm::ortho(-3.0, 3.0, -3.0, 3.0, -1.0, 1.0);
 	program.setUniformMat4f("projection", projection);
 
-	glEnable(GL_DEPTH_TEST);
-
-	while (!glfwWindowShouldClose(window))
+	while (renderer.windowNotClosed())
 	{
 		renderer.loopSetup();
 
@@ -39,7 +36,7 @@ int main()
 
 		object.draw();
 
-		glfwSwapBuffers(window);
+		renderer.swap();
 	}
 
 	glfwTerminate();

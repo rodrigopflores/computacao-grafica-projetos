@@ -21,6 +21,7 @@ Renderer::Renderer(int width, int height) {
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		exit(EXIT_FAILURE);
 	}
+	glEnable(GL_DEPTH_TEST);
 }
 
 GLFWwindow* Renderer::getWindow() const {
@@ -40,4 +41,16 @@ void Renderer::loopSetup() {
 
 void Renderer::setBgColor(glm::vec3 color) {
 	this->bgColor = color;
+}
+
+bool Renderer::windowNotClosed() {
+	return !glfwWindowShouldClose(this->window);
+}
+
+void Renderer::swap() {
+	glfwSwapBuffers(this->window);
+}
+
+void Renderer::setKeyCallback(GLFWkeyfun callback) {
+	glfwSetKeyCallback(this->window, callback);
 }

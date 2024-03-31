@@ -16,6 +16,9 @@ public:
 	GLFWwindow* getWindow() const;
 	void loopSetup();
 	void setBgColor(glm::vec3 color);
+	bool windowNotClosed();
+	void swap();
+	void setKeyCallback(GLFWkeyfun callback);
 
 };
 
