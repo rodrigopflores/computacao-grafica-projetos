@@ -13,11 +13,11 @@ private:
 	std::string materialName;
 	Texture texture;
 
+	void loadMaterial(std::string filepath);
 
 public:
 
 	Object(const std::string& filepath, const Texture& texture);
-	GLsizei getSize() const;
 	void bind();
 	void unbind();
 	void draw();

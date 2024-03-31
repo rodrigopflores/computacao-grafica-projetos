@@ -21,86 +21,84 @@ Object::Object(const std::string& filepath, const Texture& texture) : texture(te
 	ifstream inputFile;
 	inputFile.open(filepath.c_str());
 	
-	if (inputFile.is_open())
-	{
-		char line[100];
-		string sline;
+	if (!inputFile.is_open()) {
+		cout << "Problema ao encontrar o arquivo " << filepath << endl;
+		exit(EXIT_FAILURE);
+	}
 
-		while (!inputFile.eof())
-		{
-			inputFile.getline(line, 100);
-			sline = line;
+	char line[100];
+	string sline;
 
-			string word;
+	while (!inputFile.eof()) {
+		inputFile.getline(line, 100);
+		sline = line;
 
-			istringstream ssline(line);
-			ssline >> word;
-			if (word == "o") {
-				string name;
-				ssline >> name;
-				cout << "Nome do objeto: " << name << endl;
-			}
-			if (word == "usemtl") {
-				ssline >> this->materialName;
-				cout << "Nome do material: " << this->materialName << endl;
-			}
-			if (word == "v") {
-				glm::vec3 v;
-				ssline >> v.x >> v.y >> v.z;
+		string word;
 
-				vertices.push_back(v);
-			}
-			if (word == "vt") {
-				glm::vec2 vt;
-				ssline >> vt.s >> vt.t;
+		istringstream ssline(line);
+		ssline >> word;
+		if (word == "o") {
+			string name;
+			ssline >> name;
+			cout << "Nome do objeto: " << name << endl;
+		}
+		if (word == "usemtl") {
+			ssline >> this->materialName;
+			cout << "Nome do material: " << this->materialName << endl;
+		}
+		if (word == "v") {
+			glm::vec3 v;
+			ssline >> v.x >> v.y >> v.z;
 
-				texCoords.push_back(vt);
-			}
-			if (word == "vn") {
-				glm::vec3 vn;
-				ssline >> vn.x >> vn.y >> vn.z;
-				normals.push_back(vn);
-			}
-			if (word == "f") {
-				string tokens[3];
+			vertices.push_back(v);
+		}
+		if (word == "vt") {
+			glm::vec2 vt;
+			ssline >> vt.s >> vt.t;
 
-				ssline >> tokens[0] >> tokens[1] >> tokens[2];
+			texCoords.push_back(vt);
+		}
+		if (word == "vn") {
+			glm::vec3 vn;
+			ssline >> vn.x >> vn.y >> vn.z;
+			normals.push_back(vn);
+		}
+		if (word == "f") {
+			string tokens[3];
 
-				for (int i = 0; i < 3; i++) {
-					//Recuperando os indices de v
-					int pos = tokens[i].find("/");
-					string token = tokens[i].substr(0, pos);
-					int index = atoi(token.c_str()) - 1;
-					indices.push_back(index);
+			ssline >> tokens[0] >> tokens[1] >> tokens[2];
 
-					vbuffer.push_back(vertices[index].x);
-					vbuffer.push_back(vertices[index].y);
-					vbuffer.push_back(vertices[index].z);
-					vbuffer.push_back(0);
-					vbuffer.push_back(0);
-					vbuffer.push_back(0);
+			for (int i = 0; i < 3; i++) {
+				//Recuperando os indices de v
+				int pos = tokens[i].find("/");
+				string token = tokens[i].substr(0, pos);
+				int index = atoi(token.c_str()) - 1;
+				indices.push_back(index);
 
-					//Recuperando os indices de vts
-					tokens[i] = tokens[i].substr(pos + 1);
-					pos = tokens[i].find("/");
-					token = tokens[i].substr(0, pos);
-					index = atoi(token.c_str()) - 1;
-					vbuffer.push_back(texCoords[index].s);
-					vbuffer.push_back(texCoords[index].t);
-					//Recuperando os indices de vns
-					tokens[i] = tokens[i].substr(pos + 1);
-					index = atoi(tokens[i].c_str()) - 1;
-					vbuffer.push_back(normals[index].x);
-					vbuffer.push_back(normals[index].y);
-					vbuffer.push_back(normals[index].z);
-				}
+				vbuffer.push_back(vertices[index].x);
+				vbuffer.push_back(vertices[index].y);
+				vbuffer.push_back(vertices[index].z);
+				vbuffer.push_back(0);
+				vbuffer.push_back(0);
+				vbuffer.push_back(0);
+
+				//Recuperando os indices de vts
+				tokens[i] = tokens[i].substr(pos + 1);
+				pos = tokens[i].find("/");
+				token = tokens[i].substr(0, pos);
+				index = atoi(token.c_str()) - 1;
+				vbuffer.push_back(texCoords[index].s);
+				vbuffer.push_back(texCoords[index].t);
+				//Recuperando os indices de vns
+				tokens[i] = tokens[i].substr(pos + 1);
+				index = atoi(tokens[i].c_str()) - 1;
+				vbuffer.push_back(normals[index].x);
+				vbuffer.push_back(normals[index].y);
+				vbuffer.push_back(normals[index].z);
 			}
 		}
 	}
-	else
-	{
-		cout << "Problema ao encontrar o arquivo " << filepath << endl;
-	}
+	
 	inputFile.close();
 
 	this->size = vbuffer.size() / 11;
@@ -112,10 +110,39 @@ Object::Object(const std::string& filepath, const Texture& texture) : texture(te
 	layout.push<GLfloat>(2);
 	layout.push<GLfloat>(3);
 	this->va.addBuffer(vb, layout);
+
+	loadMaterial(filepath.substr(0, filepath.find_last_of('.')).append(".mtl"));
 }
 
-GLsizei Object::getSize() const {
-	return size;
+void Object::loadMaterial(std::string filepath) {
+
+	cout << "Carregando material do arquivo .mtl: " << filepath << endl;
+	ifstream inputFile;
+	inputFile.open(filepath.c_str());
+
+	if (!inputFile.is_open()) {
+		cout << "Problema ao encontrar o arquivo " << filepath << endl;
+		exit(EXIT_FAILURE);
+	}
+
+	char line[100];
+	string sline;
+
+	while (!inputFile.eof()) {
+		inputFile.getline(line, 100);
+		sline = line;
+
+		string word;
+
+		istringstream ssline(line);
+		ssline >> word;
+		if (word == "newmtl") {
+			string name;
+			ssline >> name;
+			cout << "Nome do material: " << name << endl;
+			break;
+		}
+	}
 }
 
 void Object::bind() {
