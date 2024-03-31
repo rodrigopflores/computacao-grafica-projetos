@@ -16,6 +16,7 @@ private:
     std::unordered_map<std::string, GLint> uniformLocations;
 
 public:
+
     ShaderProgram(const std::string& vsFilepath, const std::string& fsFilepath);
     ~ShaderProgram();
 
@@ -25,11 +26,14 @@ public:
     void setUniform1i(const std::string& name, GLint value);
     void setUniformMat4f(const std::string& name, const glm::mat4& matrix);
     GLuint getId();
+
 private:
+
     std::string fileToString(const std::string& filepath) const;
     GLuint createShaderProgram(const std::string& vertexShader, const std::string& fragmentShader);
     GLuint compileShader(GLenum type, const std::string& source);
     GLint getUniformLocation(const std::string& name);
+
 };
 
 

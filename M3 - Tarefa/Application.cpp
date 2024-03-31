@@ -1,10 +1,9 @@
-#include <iostream>
-#include <string>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp> 
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "Renderer.h"
 #include "ShaderProgram.h"
 #include "Texture.h"
 #include "Object.h"
@@ -15,25 +14,10 @@ const GLuint WIDTH = 800, HEIGHT = 600;
 
 int main()
 {
-
-	if (!glfwInit()) {
-		std::cout << "Falha ao inicilizar GLFW" << std::endl;
-		exit(EXIT_FAILURE);
-	}
-
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Computação Gráfica - Unisinos", nullptr, nullptr);
-	glfwMakeContextCurrent(window);
+	Renderer renderer(WIDTH, HEIGHT);
+	renderer.setBgColor(glm::vec3(0.8f, 0.8f, 0.8f));
+	GLFWwindow* window = renderer.getWindow();
 	glfwSetKeyCallback(window, key_callback);
-
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-	{
-		std::cout << "Failed to initialize GLAD" << std::endl;
-		exit(EXIT_FAILURE);
-	}
 
 	ShaderProgram program("resources/shaders/vs.glsl", "resources/shaders/fs.glsl");
 	Texture texture("../3D_Models/Suzanne/Suzanne.png");
@@ -48,14 +32,7 @@ int main()
 
 	while (!glfwWindowShouldClose(window))
 	{
-		glfwPollEvents();
-
-		int width, height;
-		glfwGetFramebufferSize(window, &width, &height);
-		glViewport(0, 0, width, height);
-
-		glClearColor(0.8f, 0.8f, 0.8f, 1.0f); 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		renderer.loopSetup();
 
 		glm::mat4 model = glm::rotate(glm::mat4(1), (float)glfwGetTime(), glm::vec3(0, 1, 0));
 		program.setUniformMat4f("model", model);
