@@ -14,3 +14,8 @@ Adicionadas funcionalidades de rotate, translate e mudança de tamanho nos cubos
 Carregando modelo 3d de arquivo .obj
 
 ![video](img/tarefa3-video.gif)
+
+## Tarefa 4 - [M4 - Tarefa](M4%20-%20Tarefa)
+Recuperadas as informações do arquivo .obj, inclusive vetores normais, sendo acrescentado ao layout. Também foram recuperados os coeficientes de iluminação do arquivo .mtl para uso no fragment shader, o qual, por sua vez, utiliza o método Phong.
+
+![video](img/tarefa4-video.gif)
