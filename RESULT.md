@@ -19,3 +19,8 @@ Carregando modelo 3d de arquivo .obj
 Recuperadas as informações do arquivo .obj, inclusive vetores normais, sendo acrescentado ao layout. Também foram recuperados os coeficientes de iluminação do arquivo .mtl para uso no fragment shader, o qual, por sua vez, utiliza o método Phong.
 
 ![video](img/tarefa4-video.gif)
+
+## Tarefa 5 - [M5 - Tarefa](M4%20-%20Tarefa)
+Inclui movimentação da câmera tanto no direcionamento com mouse quanto na movimentação ASDW 
+
+![video](img/tarefa5-video.gif)

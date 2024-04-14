@@ -1,5 +1,5 @@
-# Tarefa Módulo 3
+# Tarefa Módulo 4
 
 ## Aluno: Rodrigo Pucci Flores
 
-Carregando objetos 3D de arquivo .obj.
+Implementação de luz com Phong, a partir do arquivo mtl
