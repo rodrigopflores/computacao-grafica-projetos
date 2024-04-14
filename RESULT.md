@@ -20,7 +20,7 @@ Recuperadas as informações do arquivo .obj, inclusive vetores normais, sendo a
 
 ![video](img/tarefa4-video.gif)
 
-## Tarefa 5 - [M5 - Tarefa](M4%20-%20Tarefa)
+## Tarefa 5 - [M5 - Tarefa](M5%20-%20Tarefa)
 Inclui movimentação da câmera tanto no direcionamento com mouse quanto na movimentação ASDW 
 
 ![video](img/tarefa5-video.gif)
