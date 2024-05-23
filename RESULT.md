@@ -24,3 +24,8 @@ Recuperadas as informações do arquivo .obj, inclusive vetores normais, sendo a
 Inclui movimentação da câmera tanto no direcionamento com mouse quanto na movimentação ASDW 
 
 ![video](img/tarefa5-video.gif)
+
+## Tarefa 6 - [M6 - Tarefa](M6%20-%20Tarefa)
+Inclui movimentação do objeto com base em pontos fixos obtidos do arquivo 
+
+![video](img/tarefa6-video.gif)
