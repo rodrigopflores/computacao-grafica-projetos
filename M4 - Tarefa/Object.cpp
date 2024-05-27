@@ -5,6 +5,7 @@
 #include <iostream>
 #include "VertexBuffer.h"
 #include "VertexBufferLayout.h"
+#include "glm/gtc/matrix_transform.hpp"
 
 using namespace std;
 
@@ -145,25 +146,32 @@ void Object::loadMaterial(std::string filepath) {
 			string name;
 			ssline >> name;
 			cout << "Nome do material: " << name << endl;
-		}
-		else if (word == "Ka" || word == "Kd" || word == "Ks") {
+		} else if (word == "Ka" || word == "Kd" || word == "Ks" || word == "Ns") {
 			float value;
 			if (!(ssline >> value)) {
 				cerr << "Error: Failed to convert " << word << " value to float." << endl;
 				continue;
 			}
 			std::cout << "Atribuindo a seguinte propriedade de luz a partir do arquivo mtl: " << word << " = " << value << std::endl;
-			this->program.setUniform1f(word.c_str(), value);
+			this->light[word] = value;
 		}
 	}
+	inputFile.close();
 }
 
 Mesh& Object::getMesh() {
 	return this->mesh;
 }
 
-void Object::updateModel() {
-	program.setUniformMat4f("model", this->mesh.getUpdatedMesh());
+void Object::update() {
+	program.setUniform1f("Ka", this->light["Ka"]);
+	program.setUniform1f("Kd", this->light["Kd"]);
+	program.setUniform1f("Ks", this->light["Ks"]);
+	program.setUniform1f("q", this->light["Ns"]);
+	glm::mat4 updatedMesh = this->mesh.getUpdatedMesh();
+	program.setUniformMat4f("model", updatedMesh);
+	glm::mat4 normalMatrix = glm::transpose(glm::inverse(updatedMesh));
+	program.setUniformMat4f("normalMatrix", normalMatrix);
 }
 
 void Object::bind() {
@@ -177,7 +185,7 @@ void Object::unbind() {
 }
 
 void Object::draw() {
-	updateModel();
+	update();
 	bind();
 	glDrawArrays(GL_TRIANGLES, 0, this->size);
 	unbind();

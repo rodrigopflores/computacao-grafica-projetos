@@ -34,8 +34,7 @@ int main()
 	program.setUniformMat4f("view", view);
 	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
 	program.setUniformMat4f("projection", projection);
-	program.setUniform1f("q", 1.0);
-	program.setUniform3f("lightPos", -2.0, 10.0, 2.0);
+	program.setUniform3f("lightPos", -2.0, 5.0, 2.0);
 	program.setUniform3f("lightColor", 1.0, 1.0, 1.0);
 
 
@@ -44,7 +43,7 @@ int main()
 		renderer.loopSetup();
 
 		camera.updateShader(program);
-
+		mercury.getMesh().setAngle(glfwGetTime()*40);
 		earth.draw();
 		mercury.draw();
 

@@ -13,7 +13,7 @@ Renderer::Renderer(int width, int height) {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	this->window = glfwCreateWindow(width, height, "Computação Gráfica - Unisinos", nullptr, nullptr);
+	this->window = glfwCreateWindow(width, height, "Ola 3D -- Rodrigo!", nullptr, nullptr);
 	glfwMakeContextCurrent(window);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))

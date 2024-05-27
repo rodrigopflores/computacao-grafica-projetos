@@ -1,5 +1,6 @@
 #pragma once
 
+#include <unordered_map>
 #include <string>
 #include <glad/glad.h>
 #include "glm/glm.hpp"
@@ -15,11 +16,12 @@ private:
 	GLsizei size;
 	ShaderProgram program;
 	Texture texture;
+	std::unordered_map<std::string, float> light;
 	Mesh mesh;
 
 	void loadObjectFromFile(const std::string& filepath);
 	void loadMaterial(std::string filepath);
-	void updateModel();
+	void update();
 
 public:
 

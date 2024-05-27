@@ -43,7 +43,7 @@ int main()
 	program.setUniformMat4f("projection", projection);
 
 	program.setUniform1f("q", 1.0);
-	program.setUniform3f("lightPos", -2.0, 00.0, -3.0);
+	program.setUniform3f("lightPos", -20.0, 20.0, -5.0);
 
 	program.setUniform3f("lightColor", 1.0, 1.0, 1.0);
 
