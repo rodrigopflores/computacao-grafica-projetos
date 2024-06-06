@@ -1,5 +1,5 @@
-# Tarefa Módulo 5
+# Vivencial Módulo 6
 
 ## Aluno: Rodrigo Pucci Flores
 
-Implementação de camera, com movimentação e rotação.
+Implementação de curva Bézier

@@ -1,5 +1,5 @@
-# Tarefa Módulo 5
+# Tarefa Módulo 6
 
 ## Aluno: Rodrigo Pucci Flores
 
-Implementação de camera, com movimentação e rotação.
+Inclusão de movimentação do objeto com base em pontos fixos obtidos do arquivo.

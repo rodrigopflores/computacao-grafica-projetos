@@ -29,3 +29,8 @@ Inclui movimentação da câmera tanto no direcionamento com mouse quanto na mov
 Inclui movimentação do objeto com base em pontos fixos obtidos do arquivo 
 
 ![video](img/tarefa6-video.gif)
+
+## Atividade Vivencial 6 - [M6 - Vivencial](M6%20-%20Vivencial)
+Inclui curva Bezier na movimentação do objeto. 
+
+![video](img/vivencial6-video.gif)
