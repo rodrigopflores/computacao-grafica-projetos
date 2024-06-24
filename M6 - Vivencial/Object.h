@@ -27,6 +27,7 @@ public:
 
 	Object(const std::string& filepath, const Texture& texture, const ShaderProgram& program);
 	Mesh& getMesh();
+	std::unordered_map<std::string, float>& getLight();
 	void bind();
 	void unbind();
 	void draw();

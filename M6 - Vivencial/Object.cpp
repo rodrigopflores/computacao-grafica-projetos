@@ -190,3 +190,7 @@ void Object::draw() {
 	glDrawArrays(GL_TRIANGLES, 0, this->size);
 	unbind();
 }
+
+std::unordered_map<std::string, float>& Object::getLight() {
+	return this->light;
+}

@@ -22,24 +22,31 @@ int getTrajectoryPoint(int timelapse, float millisPerPoint);
 
 const GLuint WIDTH = 800, HEIGHT = 600;
 Camera camera;
+std::vector<Object*> objects;
+Object* selected = nullptr;
 
-int main()
-{
-
-	float distance = -10.0;
+int main() {
+	
 	Renderer renderer(WIDTH, HEIGHT);
 	renderer.setKeyCallback(keyCallback);
 	renderer.setCursorCallback(cursorCallback);
+
+	float distance = -10.0;
 
 	ShaderProgram program("resources/shaders/vs.glsl", "resources/shaders/fs.glsl");
 	Texture earthTexture("../3D_Models/Planetas/Terra.jpg");
 	Object earth("../3D_Models/Planetas/planeta.obj", earthTexture, program);
 	earth.getMesh().setPosition(glm::vec3(0.0, 0.0, distance));
-	//earth.getMesh().setScale(glm::vec3(0.5,0.5,0.5));
 	
 	Texture moonTexture("../3D_Models/Planetas/2k_mercury.jpg");
 	Object moon("../3D_Models/Planetas/planeta.obj", moonTexture, program);
 	moon.getMesh().setScale(glm::vec3(0.5, 0.5, 0.5));
+
+
+	objects.push_back(&earth);
+	objects.push_back(&moon);
+
+	selected = &earth;
 
 	glm::mat4 view = glm::lookAt(glm::vec3(0.0, 0.0, 3.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 	program.setUniformMat4f("view", view);
@@ -75,9 +82,19 @@ int main()
 		camera.updateShader(program);
 		int trajectoryPoint = getTrajectoryPoint(trajTimelapse, millisPerPoint);
 		moon.getMesh().setPosition(trajectory.getPointOnCurve(trajectoryPoint));
-		moon.draw();
-		earth.draw();
 
+		for (Object* object : objects) {
+			if (object == selected) {
+				auto& light = object->getLight();
+				float& Ka = light["Ka"];
+				Ka += 0.5f;
+				object->draw();
+				Ka -= 0.5f;
+			} else {
+				object->draw();
+			}
+		}
+	
 		renderer.swap();
 	}
 
@@ -86,6 +103,13 @@ int main()
 }
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode) {
+	if (key >= GLFW_KEY_0 && key <= GLFW_KEY_9) {
+		int num = key - GLFW_KEY_0;
+		if (num < objects.size()) {
+			selected = objects[num];
+		}
+	}
+
 	camera.translate(key, action);
 }
 
