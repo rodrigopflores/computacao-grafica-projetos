@@ -19,13 +19,13 @@ private:
 	std::unordered_map<std::string, float> light;
 	Mesh mesh;
 
-	void loadObjectFromFile(const std::string& filepath);
-	void loadMaterial(std::string filepath);
+	void loadObjectFromFile(const std::string& filepath, std::string& material);
+	void loadMaterial(std::string filepath, std::string& texture);
 	void update();
 
 public:
 
-	Object(const std::string& filepath, const Texture& texture, const ShaderProgram& program);
+	Object(const std::string& filepath, const ShaderProgram& program);
 	Mesh& getMesh();
 	std::unordered_map<std::string, float>& getLight();
 	void bind();

@@ -4,14 +4,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <iostream>
-#include <fstream>
-#include <sstream>
 #include <vector>
 #include <string>
 
 #include "Renderer.h"
 #include "ShaderProgram.h"
-#include "Texture.h"
 #include "Object.h"
 #include "Camera.h"
 #include "Bezier.h"
@@ -31,20 +28,19 @@ int main() {
 	renderer.setKeyCallback(keyCallback);
 	renderer.setCursorCallback(cursorCallback);
 
-	float distance = -10.0;
-
 	ShaderProgram program("resources/shaders/vs.glsl", "resources/shaders/fs.glsl");
-	Texture earthTexture("../3D_Models/Planetas/Terra.jpg");
-	Object earth("../3D_Models/Planetas/planeta.obj", earthTexture, program);
-	earth.getMesh().setPosition(glm::vec3(0.0, 0.0, distance));
 	
-	Texture moonTexture("../3D_Models/Planetas/2k_mercury.jpg");
-	Object moon("../3D_Models/Planetas/planeta.obj", moonTexture, program);
-	moon.getMesh().setScale(glm::vec3(0.5, 0.5, 0.5));
-
+	Object earth("../3D_Models/Planetas/planeta.obj", program);
+	Object moon("../3D_Models/Planetas/planeta.obj", program);
+	Object cube("../3D_Models/Cube/cube.obj", program);
 
 	objects.push_back(&earth);
 	objects.push_back(&moon);
+	objects.push_back(&cube);
+
+	float distance = -10.0;
+	earth.getMesh().setPosition(glm::vec3(0.0, 0.0, distance));
+	cube.getMesh().setPosition(glm::vec3(-2.0, 0.0, distance));
 
 	selected = &earth;
 
@@ -80,6 +76,7 @@ int main() {
 		renderer.loopSetup();
 
 		camera.updateShader(program);
+
 		int trajectoryPoint = getTrajectoryPoint(trajTimelapse, millisPerPoint);
 		moon.getMesh().setPosition(trajectory.getPointOnCurve(trajectoryPoint));
 
@@ -94,7 +91,6 @@ int main() {
 				object->draw();
 			}
 		}
-	
 		renderer.swap();
 	}
 

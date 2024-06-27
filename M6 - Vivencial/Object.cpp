@@ -6,17 +6,18 @@
 #include "VertexBuffer.h"
 #include "VertexBufferLayout.h"
 #include "glm/gtc/matrix_transform.hpp"
-
 using namespace std;
 
-Object::Object(const std::string& filepath, const Texture& texture, const ShaderProgram& program) : texture(texture), program(program) {
-
-	loadObjectFromFile(filepath);
-	loadMaterial(filepath.substr(0, filepath.find_last_of('.')).append(".mtl"));
-
+Object::Object(const std::string& filepath, const ShaderProgram& program) : program(program) {
+	string folder = filepath.substr(0, filepath.find_last_of("/")) + "/" ;
+	string materialFile;
+	string textureFile;
+	loadObjectFromFile(filepath, materialFile);
+	loadMaterial(folder + materialFile, textureFile);
+	texture.load(folder + textureFile);
 }
 
-void Object::loadObjectFromFile(const std::string& filepath) {
+void Object::loadObjectFromFile(const std::string& filepath, std::string& materialFile) {
 
 	cout << "Carregando objeto de arquivo .obj: " << filepath << endl;
 	vector <glm::vec3> vertices;
@@ -35,7 +36,6 @@ void Object::loadObjectFromFile(const std::string& filepath) {
 
 	char line[100];
 	string sline;
-
 	while (!inputFile.eof()) {
 		inputFile.getline(line, 100);
 		sline = line;
@@ -53,6 +53,9 @@ void Object::loadObjectFromFile(const std::string& filepath) {
 			string name;
 			ssline >> name;
 			cout << "Nome do material: " << name << endl;
+		}
+		if (word == "mtllib") {
+			ssline >> materialFile;
 		}
 		if (word == "v") {
 			glm::vec3 v;
@@ -120,7 +123,7 @@ void Object::loadObjectFromFile(const std::string& filepath) {
 	this->va.addBuffer(vb, layout);
 }
 
-void Object::loadMaterial(std::string filepath) {
+void Object::loadMaterial(std::string filepath, std::string& textureFile) {
 
 	cout << "Carregando material do arquivo .mtl: " << filepath << endl;
 	ifstream inputFile;
@@ -146,6 +149,8 @@ void Object::loadMaterial(std::string filepath) {
 			string name;
 			ssline >> name;
 			cout << "Nome do material: " << name << endl;
+		} else if (word == "map_Kd") {
+			ssline >> textureFile;
 		} else if (word == "Ka" || word == "Kd" || word == "Ks" || word == "Ns") {
 			float value;
 			if (!(ssline >> value)) {
