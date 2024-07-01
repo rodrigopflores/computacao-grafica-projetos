@@ -1,0 +1,27 @@
+name: Cena
+objects:
+  - name: Terra
+    obj-file: ../3D_Models/Vivencial/Terra.obj
+    pos: [ 0, 0, -3 ]
+    angle: 0
+    scale: [ 0.5, 0.5, 0.5 ]
+  - name: Mercurio
+    obj-file: ../3D_Models/Vivencial/Mercurio.obj
+    pos: [ -2, 0, -3 ]
+    angle: 0
+    scale: [ 0.5, 0.5, 0.5 ]
+  - name: Suzanne
+    obj-file: ../3D_Models/Vivencial/SuzanneTriTextured.obj
+    pos: [ 2, 0, -3 ]
+    angle: 0
+    scale: [ 0.5, 0.5, 0.5 ]
+  - name: Cube
+    obj-file: ../3D_Models/Vivencial/cube.obj
+    pos: [ 2, 2, -3 ]
+    angle: 0
+    scale: [ 0.5, 0.5, 0.5 ]
+  - name: Unisinos
+    obj-file: ../3D_Models/Vivencial/unisinos.obj
+    pos: [ -2, 2, -3 ]
+    angle: 0
+    scale: [ 0.5, 0.5, 0.5 ]

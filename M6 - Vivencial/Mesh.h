@@ -16,7 +16,9 @@ public:
 	void setAxis(glm::vec3 axis);
 	void setAngle(float angle);
 	void setScale(glm::vec3 scale);
-	glm::mat4 getUpdatedMesh();
-
+	glm::mat4 getUpdatedMesh() const;
+	glm::vec3& getScale();
+	float& getAngle();
+	glm::vec3& getPosition();
 };
 

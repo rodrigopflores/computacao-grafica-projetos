@@ -30,7 +30,7 @@ GLFWwindow* Renderer::getWindow() const {
 	return window;
 }
 
-void Renderer::loopSetup() {
+void Renderer::loopSetup() const {
 	glfwPollEvents();
 
 	int width, height;
@@ -45,11 +45,11 @@ void Renderer::setBgColor(glm::vec3 color) {
 	this->bgColor = color;
 }
 
-bool Renderer::windowNotClosed() {
+bool Renderer::windowNotClosed() const {
 	return !glfwWindowShouldClose(this->window);
 }
 
-void Renderer::swap() {
+void Renderer::swap() const {
 	glfwSwapBuffers(this->window);
 }
 

@@ -47,6 +47,14 @@ void Camera::translate(int key, int action) {
 	{
 		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 	}
+	if (key == GLFW_KEY_SPACE)
+	{
+		cameraPos += cameraUp * cameraSpeed;
+	}
+	if (key == GLFW_KEY_LEFT_CONTROL)
+	{
+		cameraPos -= cameraUp * cameraSpeed;
+	}
 }
 
 void Camera::updateShader(ShaderProgram& program) {

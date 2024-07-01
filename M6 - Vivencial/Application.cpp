@@ -2,7 +2,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp> 
 #include <glm/gtc/matrix_transform.hpp>
-
+#include <yaml-cpp/yaml.h>
 #include <iostream>
 #include <vector>
 #include <string>
@@ -23,26 +23,30 @@ std::vector<Object*> objects;
 Object* selected = nullptr;
 
 int main() {
-	
+
 	Renderer renderer(WIDTH, HEIGHT);
 	renderer.setKeyCallback(keyCallback);
 	renderer.setCursorCallback(cursorCallback);
 
 	ShaderProgram program("resources/shaders/vs.glsl", "resources/shaders/fs.glsl");
 	
-	Object earth("../3D_Models/Planetas/planeta.obj", program);
-	Object moon("../3D_Models/Planetas/planeta.obj", program);
-	Object cube("../3D_Models/Cube/cube.obj", program);
+	YAML::Node config = YAML::LoadFile("resources/config.yaml");
 
-	objects.push_back(&earth);
-	objects.push_back(&moon);
-	objects.push_back(&cube);
+	for (const auto& objDescription : config["objects"]) {
+		std::string objFile = objDescription["obj-file"].as<std::string>();
+		std::vector<float> pos = objDescription["pos"].as<std::vector<float>>();
+		std::vector<float> scale = objDescription["scale"].as<std::vector<float>>();
+		float angle = objDescription["angle"].as<float>();
 
-	float distance = -10.0;
-	earth.getMesh().setPosition(glm::vec3(0.0, 0.0, distance));
-	cube.getMesh().setPosition(glm::vec3(-2.0, 0.0, distance));
+		Object* objPtr = new Object(objFile, program);
+		objects.push_back(objPtr);
+		Mesh& mesh = objPtr->getMesh();
+		mesh.setPosition(glm::vec3(pos[0], pos[1], pos[2]));
+		mesh.setAngle(angle);
+		mesh.setScale(glm::vec3(scale[0], scale[1], scale[2]));
+	}
 
-	selected = &earth;
+	selected = objects[0];
 
 	glm::mat4 view = glm::lookAt(glm::vec3(0.0, 0.0, 3.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 	program.setUniformMat4f("view", view);
@@ -52,33 +56,11 @@ int main() {
 	program.setUniform3f("lightPos", -20.0, 20.0, -5.0);
 	program.setUniform3f("lightColor", 1.0, 1.0, 1.0);
 
-	Bezier trajectory;
-	float radius = 5.0;
-
-	vector<glm::vec3> controlPoints = {
-		glm::vec3(-radius, 0.0, distance),
-		glm::vec3(-radius, radius, distance),
-		glm::vec3(radius, radius, distance),
-		glm::vec3(radius, 0.0, distance),
-		glm::vec3(radius, -radius, distance),
-		glm::vec3(-radius, -radius, distance),
-		glm::vec3(-radius, 0.0, distance)
-	};
-
-	trajectory.setControlPoints(controlPoints);
-	trajectory.generateCurve(1000);
-	int planetaNbCurvePoints = trajectory.getNbCurvePoints();
-	int trajTimelapse = 4000;
-	float millisPerPoint = (float)trajTimelapse / planetaNbCurvePoints;
-
 	while (renderer.windowNotClosed())
 	{
 		renderer.loopSetup();
 
 		camera.updateShader(program);
-
-		int trajectoryPoint = getTrajectoryPoint(trajTimelapse, millisPerPoint);
-		moon.getMesh().setPosition(trajectory.getPointOnCurve(trajectoryPoint));
 
 		for (Object* object : objects) {
 			if (object == selected) {
@@ -99,6 +81,44 @@ int main() {
 }
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode) {
+
+	if (key == GLFW_KEY_LEFT_SHIFT) {
+		selected->getMesh().getScale() += 0.05;
+	}
+	if (key == GLFW_KEY_LEFT_ALT) {
+		selected->getMesh().getScale() -= 0.05;
+	}
+	if (key == GLFW_KEY_X) {
+		selected->getMesh().setAxis(glm::vec3(1.0, 0.0, 0.0));
+		selected->getMesh().getAngle() += 2.0;
+	}
+	if (key == GLFW_KEY_Y) {
+		selected->getMesh().setAxis(glm::vec3(0.0, 1.0, 0.0));
+		selected->getMesh().getAngle() += 2.0;
+	}
+	if (key == GLFW_KEY_Z) {
+		selected->getMesh().setAxis(glm::vec3(0.0, 0.0, 1.0));
+		selected->getMesh().getAngle() += 2.0;
+	}
+	float translationSpeed = 0.1;
+	if (key == GLFW_KEY_J) {
+		selected->getMesh().getPosition() += glm::vec3(-translationSpeed, 0.0, 0.0);
+	}
+	if (key == GLFW_KEY_L) {
+		selected->getMesh().getPosition() += glm::vec3(translationSpeed, 0.0, 0.0);
+	}
+	if (key == GLFW_KEY_I) {
+		selected->getMesh().getPosition() += glm::vec3(0.0, translationSpeed, 0.0);
+	}
+	if (key == GLFW_KEY_K) {
+		selected->getMesh().getPosition() += glm::vec3(0.0, -translationSpeed, 0.0);
+	}
+	if (key == GLFW_KEY_BACKSLASH) {
+		selected->getMesh().getPosition() += glm::vec3(0.0, 0.0, translationSpeed);
+	}
+	if (key == GLFW_KEY_RIGHT_BRACKET) {
+		selected->getMesh().getPosition() += glm::vec3(0.0, 0.0, -translationSpeed);
+	}
 	if (key >= GLFW_KEY_0 && key <= GLFW_KEY_9) {
 		int num = key - GLFW_KEY_0;
 		if (num < objects.size()) {

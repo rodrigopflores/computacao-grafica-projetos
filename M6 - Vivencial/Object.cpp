@@ -179,12 +179,12 @@ void Object::update() {
 	program.setUniformMat4f("normalMatrix", normalMatrix);
 }
 
-void Object::bind() {
+void Object::bind() const {
 	va.bind();
 	texture.bind();
 }
 
-void Object::unbind() {
+void Object::unbind() const {
 	va.unbind();
 	texture.unbind();
 }

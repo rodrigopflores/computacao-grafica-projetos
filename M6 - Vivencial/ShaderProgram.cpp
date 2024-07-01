@@ -116,6 +116,6 @@ void ShaderProgram::setUniformMat4f(const string& name, const glm::mat4& matrix)
     glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, &matrix[0][0]);
 }
 
-GLuint ShaderProgram::getId() {
+GLuint ShaderProgram::getId() const {
     return rendererId;
 }

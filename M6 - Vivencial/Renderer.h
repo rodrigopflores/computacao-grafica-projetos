@@ -14,10 +14,10 @@ public:
 
 	Renderer(int width, int height);
 	GLFWwindow* getWindow() const;
-	void loopSetup();
+	void loopSetup() const;
 	void setBgColor(glm::vec3 color);
-	bool windowNotClosed();
-	void swap();
+	bool windowNotClosed() const;
+	void swap() const;
 	void setKeyCallback(GLFWkeyfun callback);
 	void setCursorCallback(GLFWcursorposfun callback);
 

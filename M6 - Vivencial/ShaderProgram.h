@@ -26,7 +26,7 @@ public:
     void setUniform1f(const std::string& name, GLfloat value);
     void setUniform1i(const std::string& name, GLint value);
     void setUniformMat4f(const std::string& name, const glm::mat4& matrix);
-    GLuint getId();
+    GLuint getId() const;
 
 private:
 
