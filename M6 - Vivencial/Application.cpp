@@ -16,11 +16,16 @@
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void cursorCallback(GLFWwindow* window, double xpos, double ypos);
 int getTrajectoryPoint(int timelapse, float millisPerPoint);
-
+void loadConfigFromYaml(ShaderProgram& program);
 const GLuint WIDTH = 800, HEIGHT = 600;
 Camera camera;
 std::vector<Object*> objects;
 Object* selected = nullptr;
+struct Animation {
+	Bezier trajectory;
+	Object* object;
+};
+std::vector<Animation> animations;
 
 int main() {
 
@@ -30,37 +35,23 @@ int main() {
 
 	ShaderProgram program("resources/shaders/vs.glsl", "resources/shaders/fs.glsl");
 	
-	YAML::Node config = YAML::LoadFile("resources/config.yaml");
-
-	for (const auto& objDescription : config["objects"]) {
-		std::string objFile = objDescription["obj-file"].as<std::string>();
-		std::vector<float> pos = objDescription["pos"].as<std::vector<float>>();
-		std::vector<float> scale = objDescription["scale"].as<std::vector<float>>();
-		float angle = objDescription["angle"].as<float>();
-
-		Object* objPtr = new Object(objFile, program);
-		objects.push_back(objPtr);
-		Mesh& mesh = objPtr->getMesh();
-		mesh.setPosition(glm::vec3(pos[0], pos[1], pos[2]));
-		mesh.setAngle(angle);
-		mesh.setScale(glm::vec3(scale[0], scale[1], scale[2]));
-	}
+	loadConfigFromYaml(program);
 
 	selected = objects[0];
 
-	glm::mat4 view = glm::lookAt(glm::vec3(0.0, 0.0, 3.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
-	program.setUniformMat4f("view", view);
-	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
-	program.setUniformMat4f("projection", projection);
-
-	program.setUniform3f("lightPos", -20.0, 20.0, -5.0);
-	program.setUniform3f("lightColor", 1.0, 1.0, 1.0);
+	int trajTimelapse = 4000;
+	float millisPerPoint = (float)trajTimelapse / 1000;
 
 	while (renderer.windowNotClosed())
 	{
 		renderer.loopSetup();
 
 		camera.updateShader(program);
+
+		for (auto& animation : animations) {
+			glm::vec3 pos = animation.trajectory.getPointOnCurve(getTrajectoryPoint(trajTimelapse, millisPerPoint));
+			animation.object->getMesh().setPosition(pos);
+		}
 
 		for (Object* object : objects) {
 			if (object == selected) {
@@ -76,6 +67,9 @@ int main() {
 		renderer.swap();
 	}
 
+	for (Object* object : objects) {
+		delete object;
+	}
 	glfwTerminate();
 	return 0;
 }
@@ -133,6 +127,72 @@ void cursorCallback(GLFWwindow* window, double xpos, double ypos) {
 	camera.rotate(xpos, ypos);
 }
 
+void loadConfigFromYaml(ShaderProgram& program) {
+
+	YAML::Node config = YAML::LoadFile("resources/config.yaml");
+
+	auto view = config["view"].as<std::vector<glm::vec3>>();
+	program.setUniformMat4f("view", glm::lookAt(view[0], view[1], view[2]));
+
+	auto projAngle = config["projection"]["angle"].as<float>();
+	auto frustrum = config["projection"]["frustrum"].as<std::vector<float>>();
+	glm::mat4 projection = glm::perspective(glm::radians(projAngle), (float)WIDTH / (float)HEIGHT, frustrum[0], frustrum[1]);
+	program.setUniformMat4f("projection", projection);
+
+	auto lightPos = config["light"]["pos"].as<glm::vec3>();
+	program.setUniform3f("lightPos", lightPos.x, lightPos.y, lightPos.z);
+
+	auto lightColor = config["light"]["color"].as<glm::vec3>();
+	program.setUniform3f("lightColor", lightColor.x, lightColor.y, lightColor.z);
+
+	for (const auto& objDescription : config["objects"]) {
+		std::string objFile = objDescription["obj-file"].as<std::string>();
+		glm::vec3 pos = objDescription["pos"].as<glm::vec3>();
+		glm::vec3 scale = objDescription["scale"].as<glm::vec3>();
+		float angle = objDescription["angle"].as<float>();
+		Object* objPtr = new Object(objFile, program);
+		objects.push_back(objPtr);
+		Mesh& mesh = objPtr->getMesh();
+		mesh.setPosition(glm::vec3(pos.x, pos.y, pos.z));
+		mesh.setAngle(angle);
+		mesh.setScale(glm::vec3(scale.x, scale.y, scale.z));
+
+		auto& animationNode = objDescription["animation"];
+		if (animationNode) {
+			std::vector<glm::vec3> controlPoints = animationNode.as<std::vector<glm::vec3>>();
+			Animation animation;
+			animation.trajectory.setControlPoints(controlPoints);
+			animation.trajectory.generateCurve(1000);
+			animation.object = objPtr;
+			animations.push_back(animation);
+		}
+	}
+}
+
 int getTrajectoryPoint(int timelapse, float millisPerPoint) {
 	return (int)(glfwGetTime() * 1000) % timelapse / millisPerPoint;
+}
+
+namespace YAML {
+	template<>
+	struct convert<glm::vec3> {
+		static Node encode(const glm::vec3& rhs) {
+			Node node;
+			node.push_back(rhs.x);
+			node.push_back(rhs.y);
+			node.push_back(rhs.z);
+			return node;
+		}
+
+		static bool decode(const Node& node, glm::vec3& rhs) {
+			if (!node.IsSequence() || node.size() != 3) {
+				return false;
+			}
+
+			rhs.x = node[0].as<float>();
+			rhs.y = node[1].as<float>();
+			rhs.z = node[2].as<float>();
+			return true;
+		}
+	};
 }
