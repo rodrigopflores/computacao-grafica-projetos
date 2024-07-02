@@ -17,6 +17,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
 void cursorCallback(GLFWwindow* window, double xpos, double ypos);
 int getTrajectoryPoint(int timelapse, float millisPerPoint);
 void loadConfigFromYaml(ShaderProgram& program);
+
 const GLuint WIDTH = 800, HEIGHT = 600;
 Camera camera;
 std::vector<Object*> objects;
@@ -113,11 +114,14 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
 	if (key == GLFW_KEY_RIGHT_BRACKET) {
 		selected->getMesh().getPosition() += glm::vec3(0.0, 0.0, -translationSpeed);
 	}
-	if (key >= GLFW_KEY_0 && key <= GLFW_KEY_9) {
-		int num = key - GLFW_KEY_0;
-		if (num < objects.size()) {
-			selected = objects[num];
-		}
+	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
+		int index = find(objects.begin(), objects.end(), selected) - objects.begin();
+		selected = objects[++index % objects.size()];
+	}
+	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
+		int index = find(objects.begin(), objects.end(), selected) - objects.begin();
+		int i = --index >= 0 ? index : index + objects.size();
+		selected = objects[i];
 	}
 
 	camera.translate(key, action);
@@ -131,12 +135,14 @@ void loadConfigFromYaml(ShaderProgram& program) {
 
 	YAML::Node config = YAML::LoadFile("resources/config.yaml");
 
-	auto view = config["view"].as<std::vector<glm::vec3>>();
-	program.setUniformMat4f("view", glm::lookAt(view[0], view[1], view[2]));
+	auto cameraConfig = config["camera"];
+	camera.setCameraPos(cameraConfig["pos"].as<glm::vec3>());
+	camera.setCameraFront(cameraConfig["front"].as<glm::vec3>());
+	camera.setCameraUp(cameraConfig["up"].as<glm::vec3>());
 
 	auto projAngle = config["projection"]["angle"].as<float>();
-	auto frustrum = config["projection"]["frustrum"].as<std::vector<float>>();
-	glm::mat4 projection = glm::perspective(glm::radians(projAngle), (float)WIDTH / (float)HEIGHT, frustrum[0], frustrum[1]);
+	auto frustum = config["projection"]["frustum"].as<std::vector<float>>();
+	glm::mat4 projection = glm::perspective(glm::radians(projAngle), (float)WIDTH / (float)HEIGHT, frustum[0], frustum[1]);
 	program.setUniformMat4f("projection", projection);
 
 	auto lightPos = config["light"]["pos"].as<glm::vec3>();

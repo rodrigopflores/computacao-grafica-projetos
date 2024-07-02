@@ -17,6 +17,8 @@ public:
 	void rotate(double posX, double posY);
 	void translate(int key, int action);
 	void updateShader(ShaderProgram& program);
-
+	void setCameraPos(glm::vec3 pos) { cameraPos = pos; };
+	void setCameraFront(glm::vec3 front) { cameraFront = front; };
+	void setCameraUp(glm::vec3 up) { cameraUp = up; };
 };
 
