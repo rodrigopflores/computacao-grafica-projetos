@@ -56,8 +56,7 @@ int main() {
 
 		for (Object* object : objects) {
 			if (object == selected) {
-				auto& light = object->getLight();
-				float& Ka = light["Ka"];
+				float& Ka = object->getLight()["Ka"];
 				Ka += 0.5f;
 				object->draw();
 				Ka -= 0.5f;
@@ -159,9 +158,9 @@ void loadConfigFromYaml(ShaderProgram& program) {
 		Object* objPtr = new Object(objFile, program);
 		objects.push_back(objPtr);
 		Mesh& mesh = objPtr->getMesh();
-		mesh.setPosition(glm::vec3(pos.x, pos.y, pos.z));
+		mesh.setPosition(pos);
 		mesh.setAngle(angle);
-		mesh.setScale(glm::vec3(scale.x, scale.y, scale.z));
+		mesh.setScale(scale);
 
 		auto& animationNode = objDescription["animation"];
 		if (animationNode) {
