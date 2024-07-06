@@ -31,6 +31,6 @@ Inclui movimentação do objeto com base em pontos fixos obtidos do arquivo
 ![video](img/tarefa6-video.gif)
 
 ## Atividade Vivencial 6 - [M6 - Vivencial](M6%20-%20Vivencial)
-Inclui curva Bezier na movimentação do objeto. 
+Inclui curva Bezier na movimentação do objeto e recebe informações de câmera, iluminação, projeção e objetos do arquivo config.yaml.
 
-![video](img/vivencial6-video.gif)
+![video](img/v6.gif)
